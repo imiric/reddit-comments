@@ -18,10 +18,12 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": [
-    "index.js",
-    "template.js"
+    "index.js"
   ],
   "styles": [
     "reddit-comments.css"
+  ],
+  "templates": [
+    "template.html"
   ]
 }
