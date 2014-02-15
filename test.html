@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+    <head>
+        <title></title>
+        <link rel="stylesheet" href="build/build.css"></link>
+        <script src="build/build.js"></script>
+    </head>
+    <body>
+        <div id="reddit-comments"></div>
+        <script>
+            var RedditComments = require("reddit-comments"),
+                rc = new RedditComments("#reddit-comments").init();
+        </script>
+    </body>
+</html>
