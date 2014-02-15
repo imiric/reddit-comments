@@ -1,14 +1,22 @@
 
-build: components index.js reddit-comments.css template.js
-	@component build --dev
-
-template.js: template.html
-	@component convert $<
+all: build
 
 components: component.json
-	@component install --dev
+	component install --dev
+
+build: index.js reddit-comments.css template.html | components
+	component build --dev
 
 clean:
-	rm -fr build components template.js
+	rm -rf components build
 
-.PHONY: clean
+test: test-phantom
+
+test-phantom: | build
+	component test phantom
+
+test-browser: | build
+	component test browser
+
+
+.PHONY: all clean test test-phantom test-browser
