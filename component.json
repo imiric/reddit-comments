@@ -4,8 +4,17 @@
   "description": "Load comments from Reddit",
   "version": "0.0.1",
   "keywords": [],
-  "dependencies": {},
-  "development": {},
+  "dependencies": {
+      "component/emitter": "*",
+      "component/domify": "*",
+      "component/event": "*",
+      "component/classes": "*",
+      "component/query": "*"
+  },
+  "development": {
+      "visionmedia/mocha": "*",
+      "dominicbarnes/expect.js": "*"
+  },
   "license": "MIT",
   "main": "index.js",
   "scripts": [
