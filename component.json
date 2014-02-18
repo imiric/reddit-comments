@@ -6,10 +6,10 @@
   "keywords": [],
   "dependencies": {
       "component/emitter": "*",
-      "component/domify": "*",
       "component/event": "*",
       "component/classes": "*",
-      "component/query": "*"
+      "component/query": "*",
+      "matthewp/xhr": "*"
   },
   "development": {
       "visionmedia/mocha": "*",
