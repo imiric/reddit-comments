@@ -4,7 +4,7 @@ all: build
 components: component.json
 	component install --dev
 
-build: index.js reddit-comments.css template.html | components
+build: index.js reddit-comments.css templates | components
 	component build --dev
 
 clean:
