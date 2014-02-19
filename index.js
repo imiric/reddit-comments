@@ -2,20 +2,28 @@
 /**
  * Module dependencies.
  */
-var Emitter = require('emitter')
-  , domify = require('domify')
-  , events = require('event')
-  , classes = require('classes')
-  , query = require('query');
+var Emitter = require('emitter'),
+    events = require('event'),
+    classes = require('classes'),
+    query = require('query'),
+    xhr = require('xhr'),
+    render = require('./templates/comments');
 
-exports = module.exports = RedditComments;
+exports = module.exports = init;
+
+function init(frame, options) {
+    var rc = new RedditComments(frame, options);
+    rc.init();
+    return rc;
+}
 
 function RedditComments(frame, options) {
     options = options || {};
-    this.template = require('./template.html');
-    this.el = domify(this.template);
     this.frame = query(frame);
     this.options = options;
+    // TODO: Throw exception if no subreddit supplied
+    this.subreddit = options.subreddit;
+    return this;
 };
 
 RedditComments.prototype.init = function() {

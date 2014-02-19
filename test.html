@@ -8,8 +8,10 @@
     <body>
         <div id="reddit-comments"></div>
         <script>
-            var RedditComments = require("reddit-comments"),
-                rc = new RedditComments("#reddit-comments").init();
+            var rc = require("reddit-comments");
+            rc("#reddit-comments", {
+                'subreddit': 'aww'
+            });
         </script>
     </body>
 </html>
