@@ -37,5 +37,5 @@ module.exports = function anonymous(obj) {
     return '';
   };
 
-var out = "";out += section(obj, "comments", false, ["\n<div class=\"reddit-comment\">\n    <div class=\"rc-header\">\n        <span class=\"rc-author\">", "{author", "</span>\n        <span class=\"rc-date\">", "{date", "</span>\n    </div>\n    <p class=\"rc-comment\">", "{body", "</p>\n</div>\n"]);out += "\n";return out;
+var out = "";out += section(obj, "comments", false, ["\n<div class=\"reddit-comment\">\n    <div class=\"rc-header\">\n        <span class=\"rc-author\">", "{author", "</span>\n        <span class=\"rc-created\">", "{created", "</span>\n    </div>\n    <p class=\"rc-comment\">", "{body", "</p>\n</div>\n"]);out += "\n";return out;
 }
