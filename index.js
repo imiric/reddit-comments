@@ -23,14 +23,64 @@ function RedditComments(frame, options) {
     this.options = options;
     // TODO: Throw exception if no subreddit supplied
     this.subreddit = options.subreddit;
+    this.baseApiUrl = 'http://www.reddit.com/';
     return this;
 };
 
 RedditComments.prototype.init = function() {
-    var self = this
-      , el = self.el
-      , frame = self.frame;
+    var rc = this,
+        el = rc.el,
+        frame = rc.frame;
 
-    frame.innerHTML = self.template;
-    return self;
+    rc.fetchComments(                        // XXX: Change to document.URL
+        this.baseApiUrl + 'api/info.json?url=http://i.imgur.com/Nx0yOSb.jpg?1',
+        function(comments) {
+            var cData = [];
+            for (var i=0; i<comments.length; ++i) {
+                c = comments[i].data;
+                cData.push({'author': c.author, 'created': c.created, 'body': c.body});
+            }
+            frame.innerHTML = render({'comments': cData});
+        }
+    );
+};
+
+RedditComments.prototype.login = function() {
+};
+
+RedditComments.prototype.logout = function() {
+};
+
+RedditComments.prototype.fetchComments = function(url, cb) {
+    var rc = this;
+
+    xhr(url, function(req) {
+        var data = JSON.parse(req.response || {}).data;
+        if (data && data.children.length) {
+            var linkData = data.children[0].data;
+            if (!(linkData.subreddit == rc.subreddit)) {
+                console.log("Post doesn't belong to this subreddit");
+            } else {
+                // Fetch all comments
+                xhr(rc.baseApiUrl + '/r/' + rc.subreddit + '/comments/' + linkData.id + '.json',
+                    function(req) {
+                        var data = JSON.parse(req.response || {});
+                        if (data[1].data) {
+                            cb(data[1].data.children);
+                        }
+                    },
+                    function(err) {
+                        console.log(err);
+                });
+            }
+        }
+    }, function(err) {
+        console.log(err);
+    });
+};
+
+RedditComments.prototype.subredditExists = function(subreddit) {
+};
+
+RedditComments.prototype.comment = function() {
 };
