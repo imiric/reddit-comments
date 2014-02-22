@@ -1,0 +1,15 @@
+.reddit-comment {
+    background: #ddd;
+    padding: 10px;
+    margin: 5px 0;
+    font-size: 100%;
+    color: #333;
+}
+
+.reddit-comment .rc-header {
+    font-size: 70%;
+}
+
+.reddit-comment .rc-comment {
+    margin: 5px 0 0;
+}
