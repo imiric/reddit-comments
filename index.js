@@ -15,7 +15,12 @@ var Emitter = require('emitter'),
 exports = module.exports = init;
 
 function init(frame, options) {
-    var rc = new RedditComments(frame, options);
+    try {
+        var rc = new RedditComments(frame, options);
+    } catch (e) {
+        console.log(e.toString());
+        return;
+    }
     rc.init();
     return rc;
 }
@@ -36,12 +41,22 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
+function ConfigurationException(value, message) {
+   this.value = value;
+   this.message = message;
+   this.toString = function() {
+      return this.constructor.name + ': ' + this.value + this.message
+   };
+}
+
 function RedditComments(frame, options) {
     var defaultOptions = {
         url: document.URL,
         commentsCacheExpiration: 5
     };
-    // TODO: Throw exception if no subreddit supplied
+    if (!(options || {}).hasOwnProperty('subreddit')) {
+        throw new ConfigurationException('"subreddit"', ' is missing');
+    }
     this.options = extend(defaultOptions, options);
     this.frame = query(frame);
     this.baseApiUrl = 'http://www.reddit.com';
