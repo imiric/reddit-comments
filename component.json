@@ -10,7 +10,8 @@
       "component/classes": "*",
       "component/query": "*",
       "matthewp/xhr": "*",
-      "imiric/vagueTime.js": "3df66595"
+      "imiric/vagueTime.js": "3df66595",
+      "imiric/ls-cache": "bc622386"
   },
   "development": {
       "visionmedia/mocha": "*",

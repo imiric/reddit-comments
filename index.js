@@ -8,6 +8,7 @@ var Emitter = require('emitter'),
     query = require('query'),
     xhr = require('xhr'),
     render = require('./templates/comments'),
+    cache = require('ls-cache'),
     vagueTime = require('vague-time');
 
 exports = module.exports = init;
@@ -17,6 +18,22 @@ function init(frame, options) {
     rc.init();
     return rc;
 }
+
+/**
+ * Generate a hash code from a string.
+ * @link http://stackoverflow.com/a/7616484
+ * @return {number}
+ */
+String.prototype.hashCode = function(){
+    var hash = 0, i, char;
+    if (this.length == 0) return hash;
+    for (i = 0, l = this.length; i < l; i++) {
+        char  = this.charCodeAt(i);
+        hash  = ((hash<<5)-hash)+char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
 
 function RedditComments(frame, options) {
     options = options || {};
@@ -70,7 +87,14 @@ RedditComments.prototype.logout = function() {
 };
 
 RedditComments.prototype.getSubId = function(url, cb) {
-    var rc = this;
+    var rc = this,
+        hash = url.hashCode().toString(),
+        subId = cache.get(hash);
+
+    if (subId != null) {
+        cb(subId);
+        return;
+    }
 
     xhr(url,
         function(req) {
@@ -80,6 +104,7 @@ RedditComments.prototype.getSubId = function(url, cb) {
                 if (!(linkData.subreddit == rc.subreddit)) {
                     console.log("Post doesn't belong to this subreddit");
                 } else {
+                    cache.set(hash, linkData.id, 1440);
                     cb(linkData.id);
                 }
             }
@@ -90,11 +115,21 @@ RedditComments.prototype.getSubId = function(url, cb) {
 };
 
 RedditComments.prototype.fetchComments = function(url, cb) {
+    var hash = url.hashCode().toString(),
+        comments = cache.get(hash);
+
+    if (comments != null) {
+        cb(comments);
+        return;
+    }
+
     xhr(url,
         function(req) {
             var data = JSON.parse(req.response || {});
             if (data[1].data) {
-                cb(data[1].data.children);
+                comments = data[1].data.children;
+                cache.set(hash, comments, 5);
+                cb(comments);
             }
         }, function(err) {
             console.log(err);
