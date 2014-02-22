@@ -41,11 +41,11 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
-function ConfigurationException(value, message) {
-   this.value = value;
+function Exception(name, message) {
+   this.name = name;
    this.message = message;
    this.toString = function() {
-      return this.constructor.name + ': ' + this.value + this.message
+      return this.name + this.constructor.name + ': ' + this.message;
    };
 }
 
@@ -55,7 +55,7 @@ function RedditComments(frame, options) {
         commentsCacheExpiration: 5
     };
     if (!(options || {}).hasOwnProperty('subreddit')) {
-        throw new ConfigurationException('"subreddit"', ' is missing');
+        throw new Exception('Configuration', '"subreddit" is missing');
     }
     this.options = extend(defaultOptions, options);
     this.frame = query(frame);
