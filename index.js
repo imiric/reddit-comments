@@ -9,6 +9,7 @@ var Emitter = require('emitter'),
     xhr = require('xhr'),
     render = require('./templates/comments'),
     cache = require('ls-cache'),
+    extend = require('extend'),
     vagueTime = require('vague-time');
 
 exports = module.exports = init;
@@ -36,12 +37,13 @@ String.prototype.hashCode = function(){
 };
 
 function RedditComments(frame, options) {
-    options = options || {};
-    this.frame = query(frame);
-    this.options = options;
+    var defaultOptions = {
+        url: document.URL,
+        commentsCacheExpiration: 5
+    };
     // TODO: Throw exception if no subreddit supplied
-    this.subreddit = options.subreddit;
-    this.url = options.url || document.URL;
+    this.options = extend(defaultOptions, options);
+    this.frame = query(frame);
     this.baseApiUrl = 'http://www.reddit.com';
     return this;
 };
@@ -52,10 +54,10 @@ RedditComments.prototype.init = function() {
         frame = rc.frame;
 
     rc.getSubId(
-        rc.baseApiUrl + '/api/info.json?url=' + rc.url,
+        rc.baseApiUrl + '/api/info.json?url=' + rc.options.url,
         function(subId) {
             rc.fetchComments(
-                rc.baseApiUrl + '/r/' + rc.subreddit + '/comments/' + subId + '.json',
+                rc.baseApiUrl + '/r/' + rc.options.subreddit + '/comments/' + subId + '.json',
                 function(comments) {
                     var cData = [];
                     for (var i=0; i<comments.length; ++i) {
@@ -101,7 +103,7 @@ RedditComments.prototype.getSubId = function(url, cb) {
             var data = JSON.parse(req.response || {}).data;
             if (data && data.children.length) {
                 var linkData = data.children[0].data;
-                if (!(linkData.subreddit == rc.subreddit)) {
+                if (!(linkData.subreddit == rc.options.subreddit)) {
                     console.log("Post doesn't belong to this subreddit");
                 } else {
                     cache.set(hash, linkData.id, 1440);
