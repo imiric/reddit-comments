@@ -121,7 +121,7 @@ RedditComments.prototype.getSubId = function(url, cb) {
                 if (!(linkData.subreddit == rc.options.subreddit)) {
                     console.log("Post doesn't belong to this subreddit");
                 } else {
-                    cache.set(hash, linkData.id, 1440);
+                    cache.set(hash, linkData.id);
                     cb(linkData.id);
                 }
             }
@@ -132,7 +132,8 @@ RedditComments.prototype.getSubId = function(url, cb) {
 };
 
 RedditComments.prototype.fetchComments = function(url, cb) {
-    var hash = url.hashCode().toString(),
+    var rc = this,
+        hash = url.hashCode().toString(),
         comments = cache.get(hash);
 
     if (comments != null) {
@@ -145,7 +146,7 @@ RedditComments.prototype.fetchComments = function(url, cb) {
             var data = JSON.parse(req.response || {});
             if (data[1].data) {
                 comments = data[1].data.children;
-                cache.set(hash, comments, 5);
+                cache.set(hash, comments, rc.options.commentsCacheExpiration);
                 cb(comments);
             }
         }, function(err) {
