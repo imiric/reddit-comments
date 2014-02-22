@@ -25,7 +25,7 @@ function RedditComments(frame, options) {
     // TODO: Throw exception if no subreddit supplied
     this.subreddit = options.subreddit;
     this.url = options.url || document.URL;
-    this.baseApiUrl = 'http://www.reddit.com/';
+    this.baseApiUrl = 'http://www.reddit.com';
     return this;
 };
 
@@ -34,26 +34,31 @@ RedditComments.prototype.init = function() {
         el = rc.el,
         frame = rc.frame;
 
-    rc.fetchComments(
-        this.baseApiUrl + 'api/info.json?url=' + rc.url,
-        function(comments) {
-            var cData = [];
-            for (var i=0; i<comments.length; ++i) {
-                c = comments[i].data;
-                var date = new Date(0), vt;
-                if (c.children && c.children.length) {
-                    // TODO: Deal with this
-                    cData.push({body: 'NESTED COMMENT'});
-                } else {
-                    date.setUTCSeconds(c.created_utc);
-                    vt = vagueTime.get({to: date});
-                    cData.push({author: c.author,
-                                created_vague: vt,
-                                created_timestamp: date,
-                                body: c.body});
+    rc.getSubId(
+        rc.baseApiUrl + '/api/info.json?url=' + rc.url,
+        function(subId) {
+            rc.fetchComments(
+                rc.baseApiUrl + '/r/' + rc.subreddit + '/comments/' + subId + '.json',
+                function(comments) {
+                    var cData = [];
+                    for (var i=0; i<comments.length; ++i) {
+                        c = comments[i].data;
+                        var date = new Date(0), vt;
+                        if (c.children && c.children.length) {
+                            // TODO: Deal with this
+                            cData.push({body: 'NESTED COMMENT'});
+                        } else {
+                            date.setUTCSeconds(c.created_utc);
+                            vt = vagueTime.get({to: date});
+                            cData.push({author: c.author,
+                                        created_vague: vt,
+                                        created_timestamp: date,
+                                        body: c.body});
+                        }
+                    }
+                    frame.innerHTML = render({'comments': cData});
                 }
-            }
-            frame.innerHTML = render({'comments': cData});
+            );
         }
     );
 };
@@ -64,32 +69,37 @@ RedditComments.prototype.login = function() {
 RedditComments.prototype.logout = function() {
 };
 
-RedditComments.prototype.fetchComments = function(url, cb) {
+RedditComments.prototype.getSubId = function(url, cb) {
     var rc = this;
 
-    xhr(url, function(req) {
-        var data = JSON.parse(req.response || {}).data;
-        if (data && data.children.length) {
-            var linkData = data.children[0].data;
-            if (!(linkData.subreddit == rc.subreddit)) {
-                console.log("Post doesn't belong to this subreddit");
-            } else {
-                // Fetch all comments
-                xhr(rc.baseApiUrl + '/r/' + rc.subreddit + '/comments/' + linkData.id + '.json',
-                    function(req) {
-                        var data = JSON.parse(req.response || {});
-                        if (data[1].data) {
-                            cb(data[1].data.children);
-                        }
-                    },
-                    function(err) {
-                        console.log(err);
-                });
+    xhr(url,
+        function(req) {
+            var data = JSON.parse(req.response || {}).data;
+            if (data && data.children.length) {
+                var linkData = data.children[0].data;
+                if (!(linkData.subreddit == rc.subreddit)) {
+                    console.log("Post doesn't belong to this subreddit");
+                } else {
+                    cb(linkData.id);
+                }
             }
+        }, function(err) {
+            console.log(err);
         }
-    }, function(err) {
-        console.log(err);
-    });
+    );
+};
+
+RedditComments.prototype.fetchComments = function(url, cb) {
+    xhr(url,
+        function(req) {
+            var data = JSON.parse(req.response || {});
+            if (data[1].data) {
+                cb(data[1].data.children);
+            }
+        }, function(err) {
+            console.log(err);
+        }
+    );
 };
 
 RedditComments.prototype.subredditExists = function(subreddit) {
