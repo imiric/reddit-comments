@@ -24,6 +24,7 @@ function RedditComments(frame, options) {
     this.options = options;
     // TODO: Throw exception if no subreddit supplied
     this.subreddit = options.subreddit;
+    this.url = options.url || document.URL;
     this.baseApiUrl = 'http://www.reddit.com/';
     return this;
 };
@@ -33,8 +34,8 @@ RedditComments.prototype.init = function() {
         el = rc.el,
         frame = rc.frame;
 
-    rc.fetchComments(                        // XXX: Change to document.URL
-        this.baseApiUrl + 'api/info.json?url=http://i.imgur.com/Nx0yOSb.jpg?1',
+    rc.fetchComments(
+        this.baseApiUrl + 'api/info.json?url=' + rc.url,
         function(comments) {
             var cData = [];
             for (var i=0; i<comments.length; ++i) {
