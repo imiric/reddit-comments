@@ -7,7 +7,8 @@ var Emitter = require('emitter'),
     classes = require('classes'),
     query = require('query'),
     xhr = require('xhr'),
-    render = require('./templates/comments');
+    render = require('./templates/comments'),
+    vagueTime = require('vague-time');
 
 exports = module.exports = init;
 
@@ -38,7 +39,18 @@ RedditComments.prototype.init = function() {
             var cData = [];
             for (var i=0; i<comments.length; ++i) {
                 c = comments[i].data;
-                cData.push({'author': c.author, 'created': c.created, 'body': c.body});
+                var date = new Date(0), vt;
+                if (c.children && c.children.length) {
+                    // TODO: Deal with this
+                    cData.push({body: 'NESTED COMMENT'});
+                } else {
+                    date.setUTCSeconds(c.created_utc);
+                    vt = vagueTime.get({to: date});
+                    cData.push({author: c.author,
+                                created_vague: vt,
+                                created_timestamp: date,
+                                body: c.body});
+                }
             }
             frame.innerHTML = render({'comments': cData});
         }

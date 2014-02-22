@@ -9,7 +9,8 @@
       "component/event": "*",
       "component/classes": "*",
       "component/query": "*",
-      "matthewp/xhr": "*"
+      "matthewp/xhr": "*",
+      "imiric/vagueTime.js": "3df66595"
   },
   "development": {
       "visionmedia/mocha": "*",
