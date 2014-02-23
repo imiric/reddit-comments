@@ -68,11 +68,11 @@ RedditComments.prototype.init = function() {
         el = rc.el,
         frame = rc.frame;
 
-    rc.getSubId(
+    rc.getUrlId(
         rc.baseApiUrl + '/api/info.json?url=' + rc.options.url,
-        function(subId) {
+        function(urlId) {
             rc.fetchComments(
-                rc.baseApiUrl + '/r/' + rc.options.subreddit + '/comments/' + subId + '.json',
+                rc.baseApiUrl + '/r/' + rc.options.subreddit + '/comments/' + urlId + '.json',
                 function(comments) {
                     var cData = [];
                     for (var i=0; i<comments.length; ++i) {
@@ -103,13 +103,13 @@ RedditComments.prototype.login = function() {
 RedditComments.prototype.logout = function() {
 };
 
-RedditComments.prototype.getSubId = function(url, cb) {
+RedditComments.prototype.getUrlId = function(url, cb) {
     var rc = this,
         hash = url.hashCode().toString(),
-        subId = cache.get(hash);
+        urlId = cache.get(hash);
 
-    if (subId != null) {
-        cb(subId);
+    if (urlId != null) {
+        cb(urlId);
         return;
     }
 
