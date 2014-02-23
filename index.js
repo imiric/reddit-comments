@@ -1,3 +1,8 @@
+/**
+ * Reddit as a commenting system backend.
+ * @module reddit-comments
+ */
+
 
 /**
  * Module dependencies.
@@ -12,8 +17,17 @@ var Emitter = require('emitter'),
     extend = require('extend'),
     vagueTime = require('vague-time');
 
+
 exports = module.exports = init;
 
+
+/**
+ * Module initialization function.
+ *
+ * @borrows RedditComments as init
+ * @alias module:reddit-comments
+ * @public
+ */
 function init(frame, options) {
     try {
         var rc = new RedditComments(frame, options);
@@ -25,8 +39,10 @@ function init(frame, options) {
     return rc;
 }
 
+
 /**
  * Generate a hash code from a string.
+ *
  * @link http://stackoverflow.com/a/7616484
  * @return {number}
  */
@@ -41,6 +57,14 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
+
+/**
+ * A generic exception object.
+ *
+ * @param {string} name - The name of the exception.
+ * @param {string} message - The exception message.
+ * @private
+ */
 function Exception(name, message) {
    this.name = name;
    this.message = message;
@@ -49,6 +73,19 @@ function Exception(name, message) {
    };
 }
 
+
+/**
+ * Main module object.
+ *
+ * @param {string} frame - A CSS selector of the element to be populated by comments.
+ * @param {Object} options - Module configuration.
+ * @param {string} options.subreddit - The subreddit name.
+ * @param {string} [options.url=document.URL] - The URL to retrieve comments for.
+ * @param {number} [options.commentsCacheExpiration=5] - Expiration time for
+ *     retrieved comments in the `localStorage` cache.
+ * @constructor
+ * @private
+ */
 function RedditComments(frame, options) {
     var defaultOptions = {
         url: document.URL,
@@ -63,6 +100,12 @@ function RedditComments(frame, options) {
     return this;
 };
 
+
+/**
+ * Object initialization function.
+ *
+ * Displays retrieved comments.
+ */
 RedditComments.prototype.init = function() {
     var rc = this,
         el = rc.el,
@@ -70,12 +113,25 @@ RedditComments.prototype.init = function() {
 
     rc.getUrlId(
         rc.baseApiUrl + '/api/info.json?url=' + rc.options.url,
+        /**
+         * Retrieve the comments for a given a URL.
+         *
+         * @callback RedditComments~getUrlIdCallback
+         * @param {string} urlId - The URL's ID36.
+         */
         function(urlId) {
             rc.fetchComments(
                 rc.baseApiUrl + '/r/' + rc.options.subreddit + '/comments/' + urlId + '.json',
+                /**
+                 * Process and render the comments.
+                 *
+                 * @callback RedditComments~fetchCommentsCallback
+                 * @param {Object[]} comments - A list of comments as returned
+                 *     by the Reddit API.
+                 */
                 function(comments) {
                     var cData = [];
-                    for (var i=0; i<comments.length; ++i) {
+                    for (var i = 0; i < comments.length; ++i) {
                         c = comments[i].data;
                         var date = new Date(0), vt;
                         if (c.children && c.children.length) {
@@ -97,12 +153,31 @@ RedditComments.prototype.init = function() {
     );
 };
 
-RedditComments.prototype.login = function() {
+
+/**
+ * Logs in a Reddit user.
+ *
+ * @param {string} username
+ * @param {string} password
+ */
+RedditComments.prototype.login = function(username, password) {
 };
 
+
+/**
+ * Logs out a Reddit user.
+ */
 RedditComments.prototype.logout = function() {
 };
 
+
+/**
+ * Retrieves the URL's unique ID36.
+ *
+ * @param {string} url
+ * @param {RedditComments~getUrlIdCallback} cb - The callback that handles the
+ *     XHR response.
+ */
 RedditComments.prototype.getUrlId = function(url, cb) {
     var rc = this,
         hash = url.hashCode().toString(),
@@ -131,6 +206,14 @@ RedditComments.prototype.getUrlId = function(url, cb) {
     );
 };
 
+
+/**
+ * Retrieves the comments associated with an URL.
+ *
+ * @param {string} url
+ * @param {RedditComments~fetchCommentsCallback} cb - The callback that processes
+ *     the comments.
+ */
 RedditComments.prototype.fetchComments = function(url, cb) {
     var rc = this,
         hash = url.hashCode().toString(),
@@ -155,8 +238,11 @@ RedditComments.prototype.fetchComments = function(url, cb) {
     );
 };
 
-RedditComments.prototype.subredditExists = function(subreddit) {
-};
 
-RedditComments.prototype.comment = function() {
+/**
+ * Posts a comment on the Reddit post.
+ *
+ * @param {string} body - The comment body.
+ */
+RedditComments.prototype.comment = function(body) {
 };
