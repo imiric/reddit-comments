@@ -7,11 +7,11 @@
 /**
  * Module dependencies.
  */
-var Emitter = require('emitter'),
+var Reddit = require('reddit-api'),
+    Emitter = require('emitter'),
     events = require('event'),
     classes = require('classes'),
     query = require('query'),
-    xhr = require('xhr'),
     render = require('./templates/comments'),
     cache = require('ls-cache'),
     extend = require('extend'),
@@ -19,6 +19,8 @@ var Emitter = require('emitter'),
 
 
 exports = module.exports = init;
+
+var api = new Reddit();
 
 
 /**
@@ -78,9 +80,9 @@ function RedditComments(frame, options) {
     if (!('subreddit' in (options || {}))) {
         throw new TypeError('Must specify a "subreddit"');
     }
+    api.subreddit = options.subreddit;
     this.options = extend(defaultOptions, options);
     this.frame = query(frame);
-    this.baseApiUrl = 'http://www.reddit.com';
     return this;
 };
 
@@ -95,46 +97,11 @@ RedditComments.prototype.init = function() {
         el = rc.el,
         frame = rc.frame;
 
-    rc.getUrlId(
-        rc.baseApiUrl + '/api/info.json?url=' + rc.options.url,
-        /**
-         * Retrieve the comments for a given a URL.
-         *
-         * @callback RedditComments~getUrlIdCallback
-         * @param {string} urlId - The URL's ID36.
-         */
-        function(urlId) {
-            rc.fetchComments(
-                rc.baseApiUrl + '/r/' + rc.options.subreddit + '/comments/' + urlId + '.json',
-                /**
-                 * Process and render the comments.
-                 *
-                 * @callback RedditComments~fetchCommentsCallback
-                 * @param {Object[]} comments - A list of comments as returned
-                 *     by the Reddit API.
-                 */
-                function(comments) {
-                    var cData = [];
-                    for (var i = 0; i < comments.length; ++i) {
-                        c = comments[i].data;
-                        var date = new Date(0), vt;
-                        if (c.children && c.children.length) {
-                            // TODO: Deal with this
-                            cData.push({body: 'NESTED COMMENT'});
-                        } else {
-                            date.setUTCSeconds(c.created_utc);
-                            vt = vagueTime.get({to: date});
-                            cData.push({author: c.author,
-                                        created_vague: vt,
-                                        created_timestamp: date,
-                                        body: c.body});
-                        }
-                    }
-                    frame.innerHTML = render({'comments': cData});
-                }
-            );
-        }
-    );
+    rc.getUrlId(rc.options.url).then(function(urlId) {
+        return rc.getComments(urlId);
+    }).then(function(comments) {
+        frame.innerHTML = render({'comments': comments});
+    });
 };
 
 
@@ -156,77 +123,108 @@ RedditComments.prototype.logout = function() {
 
 
 /**
- * Retrieves the URL's unique ID36.
- *
- * @param {string} url
- * @param {RedditComments~getUrlIdCallback} cb - The callback that handles the
- *     XHR response.
- */
-RedditComments.prototype.getUrlId = function(url, cb) {
-    var rc = this,
-        hash = url.hashCode().toString(),
-        urlId = cache.get(hash);
-
-    if (urlId != null) {
-        cb(urlId);
-        return;
-    }
-
-    xhr(url,
-        function(req) {
-            var data = JSON.parse(req.response || {}).data;
-            if (data && data.children.length) {
-                var linkData = data.children[0].data;
-                if (!(linkData.subreddit == rc.options.subreddit)) {
-                    console.log("Post doesn't belong to this subreddit");
-                } else {
-                    cache.set(hash, linkData.id);
-                    cb(linkData.id);
-                }
-            }
-        }, function(err) {
-            console.log(err);
-        }
-    );
-};
-
-
-/**
- * Retrieves the comments associated with an URL.
- *
- * @param {string} url
- * @param {RedditComments~fetchCommentsCallback} cb - The callback that processes
- *     the comments.
- */
-RedditComments.prototype.fetchComments = function(url, cb) {
-    var rc = this,
-        hash = url.hashCode().toString(),
-        comments = cache.get(hash);
-
-    if (comments != null) {
-        cb(comments);
-        return;
-    }
-
-    xhr(url,
-        function(req) {
-            var data = JSON.parse(req.response || {});
-            if (data[1].data) {
-                comments = data[1].data.children;
-                cache.set(hash, comments, rc.options.commentsCacheExpiration);
-                cb(comments);
-            }
-        }, function(err) {
-            console.log(err);
-        }
-    );
-};
-
-
-/**
  * Posts a comment on the Reddit post.
  *
  * @param {string} body - The comment body.
  */
 RedditComments.prototype.comment = function(body) {
+};
+
+
+/**
+ * Extract the comment data and process it for rendering.
+ *
+ * @param {Object} data - The data as returned by the Reddit API.
+ */
+RedditComments.prototype.getComments = function(urlId) {
+    var rc = this,
+        hash = urlId.hashCode().toString(),
+        comments = cache.get(hash);
+
+    if (comments != null) {
+        // Fake Promise to match the API
+        return {
+            then: function(resolve, reject) {return resolve(comments);}
+        }
+    }
+
+    return api.getComments(urlId).then(function(res) {
+        var data = JSON.parse(res || {}),
+            comments = rc.extractComments(data);
+        cache.set(hash, comments, rc.options.commentsCacheExpiration);
+        return comments;
+    });
+};
+
+
+/**
+ * Extract the comment data and process it for rendering.
+ *
+ * @param {Object} data - The data as returned by the Reddit API.
+ */
+RedditComments.prototype.extractComments = function(data) {
+    var cData = [];
+    if (!(data[1].data)) return cData;
+    data = data[1].data.children;
+    for (var i = 0; i < data.length; ++i) {
+        c = data[i].data;
+        var date = new Date(0), vt;
+        if (c.children && c.children.length) {
+            // TODO: Deal with this
+            cData.push({body: 'NESTED COMMENT'});
+        } else {
+            date.setUTCSeconds(c.created_utc);
+            vt = vagueTime.get({to: date});
+            cData.push({author: c.author,
+                        created_vague: vt,
+                        created_timestamp: date,
+                        body: c.body});
+        }
+    }
+    return cData;
+};
+
+
+/**
+ * Extract the URL's ID36.
+ *
+ * @param {Object} data - The data as returned by the Reddit API.
+ */
+RedditComments.prototype.getUrlId = function(url) {
+    var rc = this,
+        hash = url.hashCode().toString(),
+        urlId = cache.get(hash);
+
+    if (urlId != null) {
+        // Fake Promise to match the API
+        return {
+            then: function(resolve, reject) {return resolve(urlId);}
+        }
+    }
+
+    return api.getInfo({url: url}).then(function(res) {
+        var data = JSON.parse(res || {}).data,
+            urlId = rc.extractUrlId(data);
+        cache.set(hash, urlId);
+        return urlId;
+    });
+};
+
+
+/**
+ * Extract the URL's ID36.
+ *
+ * @param {Object} data - The data as returned by the Reddit API.
+ */
+RedditComments.prototype.extractUrlId = function(data) {
+    var rc = this;
+
+    if (data && data.children.length) {
+        var linkData = data.children[0].data;
+        if (!(linkData.subreddit == rc.options.subreddit)) {
+            console.log("Post doesn't belong to this subreddit");
+        } else {
+            return linkData.id;
+        }
+    }
 };

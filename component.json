@@ -9,10 +9,10 @@
       "component/event": "*",
       "component/classes": "*",
       "component/query": "*",
-      "matthewp/xhr": "*",
       "segmentio/extend": "*",
       "imiric/vagueTime.js": "3df66595",
-      "imiric/ls-cache": "bc622386"
+      "imiric/ls-cache": "bc622386",
+      "imiric/reddit-api": "*"
   },
   "development": {
       "visionmedia/mocha": "*",
