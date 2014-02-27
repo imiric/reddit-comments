@@ -59,22 +59,6 @@ String.prototype.hashCode = function(){
 
 
 /**
- * A generic exception object.
- *
- * @param {string} name - The name of the exception.
- * @param {string} message - The exception message.
- * @private
- */
-function Exception(name, message) {
-   this.name = name;
-   this.message = message;
-   this.toString = function() {
-      return this.name + this.constructor.name + ': ' + this.message;
-   };
-}
-
-
-/**
  * Main module object.
  *
  * @param {string} frame - A CSS selector of the element to be populated by comments.
@@ -91,8 +75,8 @@ function RedditComments(frame, options) {
         url: document.URL,
         commentsCacheExpiration: 5
     };
-    if (!(options || {}).hasOwnProperty('subreddit')) {
-        throw new Exception('Configuration', '"subreddit" is missing');
+    if (!('subreddit' in (options || {}))) {
+        throw new TypeError('Must specify a "subreddit"');
     }
     this.options = extend(defaultOptions, options);
     this.frame = query(frame);
