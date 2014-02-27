@@ -1,7 +1,18 @@
 
 # reddit-comments
 
-  Load comments from Reddit.
+  A component for loading comments from Reddit. Think Disqus but with Reddit
+  as a backend.
+
+  Still very much in development, so not for public consumption yet.
+
+## Features
+
+  Not much is implemented yet, but the planned features are:
+
+  * Load comments of the current URL in a given subreddit.
+  * Reply to, vote and delete comments directly from the component UI.
+  * Post the current URL to the configured subreddit (if permitted).
 
 ## Installation
 
@@ -9,30 +20,12 @@
 
     $ component install imiric/reddit-comments
 
+  Browser instructions and downloads coming soon.
+
 ## API
 
-
+  TBD
 
 ## License
 
-  The MIT License (MIT)
-
-  Copyright (c) 2014 <copyright holders>
-
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in
-  all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-  THE SOFTWARE.
+  [MIT](LICENSE)
