@@ -63,10 +63,10 @@ String.prototype.hashCode = function(){
 /**
  * Main module object.
  *
- * @param {string} frame - A CSS selector of the element to be populated by comments.
+ * @param {String} frame - A CSS selector of the element to be populated by comments.
  * @param {Object} options - Module configuration.
- * @param {string} options.subreddit - The subreddit name.
- * @param {string} [options.url=document.URL] - The URL to retrieve comments for.
+ * @param {String} options.subreddit - The subreddit name.
+ * @param {String} [options.url=document.URL] - The URL to retrieve comments for.
  * @param {number} [options.commentsCacheExpiration=5] - Expiration time for
  *     retrieved comments in the `localStorage` cache.
  * @constructor
@@ -108,8 +108,8 @@ RedditComments.prototype.init = function() {
 /**
  * Logs in a Reddit user.
  *
- * @param {string} username
- * @param {string} password
+ * @param {String} username
+ * @param {String} password
  */
 RedditComments.prototype.login = function(username, password) {
 };
@@ -125,16 +125,16 @@ RedditComments.prototype.logout = function() {
 /**
  * Posts a comment on the Reddit post.
  *
- * @param {string} body - The comment body.
+ * @param {String} body - The comment body.
  */
 RedditComments.prototype.comment = function(body) {
 };
 
 
 /**
- * Extract the comment data and process it for rendering.
+ * Get the comments associated with a URL.
  *
- * @param {Object} data - The data as returned by the Reddit API.
+ * @param {String} urlId - Reddit's ID36 of a URL.
  */
 RedditComments.prototype.getComments = function(urlId) {
     var rc = this,
@@ -158,7 +158,8 @@ RedditComments.prototype.getComments = function(urlId) {
 
 
 /**
- * Extract the comment data and process it for rendering.
+ * Extract the comment data from Reddit's response and process it for
+ * rendering.
  *
  * @param {Object} data - The data as returned by the Reddit API.
  */
@@ -186,9 +187,12 @@ RedditComments.prototype.extractComments = function(data) {
 
 
 /**
- * Extract the URL's ID36.
+ * Given a URL, get its ID36.
  *
- * @param {Object} data - The data as returned by the Reddit API.
+ * ID36 is the unique ID used by Reddit.
+ * @see http://www.reddit.com/dev/api#fullnames
+ *
+ * @param {String} url
  */
 RedditComments.prototype.getUrlId = function(url) {
     var rc = this,
@@ -212,7 +216,7 @@ RedditComments.prototype.getUrlId = function(url) {
 
 
 /**
- * Extract the URL's ID36.
+ * Extract the URL's ID36 from Reddit's response.
  *
  * @param {Object} data - The data as returned by the Reddit API.
  */
