@@ -94,7 +94,6 @@ function RedditComments(frame, options) {
  */
 RedditComments.prototype.init = function() {
     var rc = this,
-        el = rc.el,
         frame = rc.frame;
 
     rc.getUrlId(rc.options.url).then(function(urlId) {
