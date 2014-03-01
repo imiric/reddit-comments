@@ -1,9 +1,9 @@
 .reddit-comment {
+    color: #444;
     background: #ddd;
     padding: 10px;
     margin: 5px 0;
     font-size: 100%;
-    color: #333;
 }
 
 .reddit-comment .rc-header {
@@ -12,4 +12,83 @@
 
 .reddit-comment .rc-comment {
     margin: 5px 0 0;
+}
+
+.reddit-comment .rc-vote {
+    width: 15px;
+    float: left;
+    margin: 0 5px 0 -5px;
+}
+
+.reddit-comment .rc-vote button {
+    background: transparent;
+    border: none !important;
+}
+
+/*********
+ * Arrows
+ * Source: http://codepen.io/eMaj/pen/joLqt
+ *********/
+
+.rc-arrow {
+    width: 1em;
+    height: 1em;
+    position: relative;
+    display: inline-block;
+    margin: 3px;
+}
+
+.rc-arrow:before, .rc-arrow:after {
+    content: '';
+    border-color: transparent;
+    border-style: solid;
+    position: absolute;
+}
+
+.rc-arrow-up:before {
+    border: none;
+    background-color: #C6C6C6;
+    height: 50%;
+    width: 40%;
+    top: 50%;
+    left: 30%;
+}
+
+.rc-arrow-up:after {
+    left: 0;
+    top: -30%;
+    border-width: 0.5em 0.5em;
+    border-bottom-color: #C6C6C6;
+}
+
+.rc-arrow-down:before {
+    border: none;
+    background-color: #C6C6C6;
+    height: 50%;
+    width: 40%;
+    top: 0;
+    left: 30%;
+}
+
+.rc-arrow-down:after {
+    left: 0;
+    top: 40%;
+    border-width: 0.5em 0.5em;
+    border-top-color: #C6C6C6;
+}
+
+.rc-arrow-up:active:before {
+    background-color: #FF6600;
+}
+
+.rc-arrow-up:active:after {
+    border-bottom-color: #FF6600;
+}
+
+.rc-arrow-down:active:before {
+    background-color: #447BD4;
+}
+
+.rc-arrow-down:active:after {
+    border-top-color: #447BD4;
 }
