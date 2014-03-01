@@ -178,6 +178,7 @@ RedditComments.prototype.extractComments = function(data) {
             cData.push({author: c.author,
                         created_vague: vt,
                         created_timestamp: date,
+                        score: c.ups - c.downs, // XXX: Where is c.score?
                         body: c.body});
         }
     }

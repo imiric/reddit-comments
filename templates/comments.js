@@ -37,5 +37,5 @@ module.exports = function anonymous(obj) {
     return '';
   };
 
-var out = "";out += section(obj, "comments", false, ["\n<div class=\"reddit-comment\">\n    <div class=\"rc-vote\">\n        <button class=\"rc-arrow rc-arrow-up\" />\n        <button class=\"rc-arrow rc-arrow-down\" />\n    </div>\n    <div class=\"rc-header\">\n        <span class=\"rc-author\">", "{author", "</span> &bull;\n        <span class=\"rc-created\" title=\"", "{created_timestamp", "\">", "{created_vague", "</span>\n    </div>\n    <p class=\"rc-comment\">", "{body", "</p>\n</div>\n"]);out += "\n";return out;
+var out = "";out += section(obj, "comments", false, ["\n<div class=\"reddit-comment\">\n    <div class=\"rc-vote\">\n        <button class=\"rc-arrow rc-arrow-up\" />\n        <button class=\"rc-arrow rc-arrow-down\" />\n    </div>\n    <div class=\"rc-header\">\n        <span class=\"rc-author\">", "{author", "</span> &bull;\n        <span class=\"rc-score\">", "{score", "</span> points &bull;\n        around <span class=\"rc-created\" title=\"", "{created_timestamp", "\">", "{created_vague", "</span>\n    </div>\n    <p class=\"rc-comment\">", "{body", "</p>\n</div>\n"]);out += "\n";return out;
 }
