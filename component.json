@@ -22,7 +22,7 @@
   "main": "index.js",
   "scripts": [
     "index.js",
-    "templates/comments.js"
+    "templates/comment.js"
   ],
   "styles": [
     "reddit-comments.css"

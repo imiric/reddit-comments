@@ -12,7 +12,7 @@ var Reddit = require('reddit-api'),
     events = require('event'),
     classes = require('classes'),
     query = require('query'),
-    render = require('./templates/comments'),
+    render = require('./templates/comment'),
     cache = require('ls-cache'),
     extend = require('extend'),
     vagueTime = require('vague-time');
@@ -93,13 +93,12 @@ function RedditComments(frame, options) {
  * Displays retrieved comments.
  */
 RedditComments.prototype.init = function() {
-    var rc = this,
-        frame = rc.frame;
+    var rc = this;
 
     rc.getUrlId(rc.options.url).then(function(urlId) {
         return rc.getComments(urlId);
     }).then(function(comments) {
-        frame.innerHTML = render({'comments': comments});
+        rc.renderComments(comments);
     });
 };
 
@@ -235,4 +234,37 @@ RedditComments.prototype.extractUrlId = function(data) {
             return linkData.id;
         }
     }
+};
+
+
+/**
+ * Render a list of comments.
+ *
+ * @param {Array} comments - A collection of comments as returned by
+ *     `extractComments()`.
+ */
+RedditComments.prototype.renderComments = function(comments) {
+    var rc = this,
+        frame = rc.frame,
+        out = '';
+    for (var i = 0; i < comments.length; ++i) {
+        out += rc.renderComment(comments[i]);
+    };
+    frame.innerHTML = out;
+};
+
+/**
+ * Render a single comment.
+ *
+ * If there are nested comments, this function will call itself recursively.
+ *
+ * @param {Object} c - A comment object.
+ */
+RedditComments.prototype.renderComment = function(c) {
+    var rc = this, replies = '';
+    for (var i = 0; i < c.replies.length; ++i) {
+        replies += rc.renderComment(c.replies[i]);
+    };
+    c.replies = replies;
+    return render(c);
 };
