@@ -1,8 +1,9 @@
 .reddit-comment {
     color: #444;
-    background: #ddd;
-    padding: 10px;
-    margin: 5px 0;
+    background: #fefefe;
+    padding: 0 10px;
+    border-left: 1px dotted #ddd;
+    margin-top: 10px;
     font-size: 100%;
 }
 
