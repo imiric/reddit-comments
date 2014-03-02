@@ -167,20 +167,17 @@ RedditComments.prototype.extractComments = function(data) {
     if (!(data[1].data)) return cData;
     data = data[1].data.children;
     for (var i = 0; i < data.length; ++i) {
-        c = data[i].data;
-        var date = new Date(0), vt;
-        if (c.children && c.children.length) {
-            // TODO: Deal with this
-            cData.push({body: 'NESTED COMMENT'});
-        } else {
-            date.setUTCSeconds(c.created_utc);
-            vt = vagueTime.get({to: date});
-            cData.push({author: c.author,
-                        created_vague: vt,
-                        created_timestamp: date,
-                        score: c.ups - c.downs, // XXX: Where is c.score?
-                        body: c.body});
-        }
+        if (data[i].kind != "t1") continue;
+        var c = data[i].data,
+            date = new Date(0),
+            vt;
+        date.setUTCSeconds(c.created_utc);
+        vt = vagueTime.get({to: date});
+        cData.push({author: c.author,
+                    created_vague: vt,
+                    created_timestamp: date,
+                    score: c.ups - c.downs, // XXX: Where is c.score?
+                    body: c.body});
     }
     return cData;
 };
