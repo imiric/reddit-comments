@@ -163,19 +163,26 @@ RedditComments.prototype.getComments = function(urlId) {
  * @param {Object} data - The data as returned by the Reddit API.
  */
 RedditComments.prototype.extractComments = function(data) {
-    var cData = [];
-    if (!(data[1].data)) return cData;
-    data = data[1].data.children;
+    var rc = this,
+        cData = [];
+    data = (data[1] || data);
+    if (!data.data.children) return cData;
+    data = data.data.children;
     for (var i = 0; i < data.length; ++i) {
         if (data[i].kind != "t1") continue;
-        var c = data[i].data,
+        var replies = [],
+            c = data[i].data,
             date = new Date(0),
             vt;
+        if (c.replies) {
+            replies = rc.extractComments(c.replies);
+        }
         date.setUTCSeconds(c.created_utc);
         vt = vagueTime.get({to: date});
         cData.push({author: c.author,
                     created_vague: vt,
                     created_timestamp: date,
+                    replies: replies,
                     score: c.ups - c.downs, // XXX: Where is c.score?
                     body: c.body});
     }
