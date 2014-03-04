@@ -7,12 +7,11 @@
   "dependencies": {
       "component/emitter": "*",
       "component/event": "*",
-      "component/classes": "*",
-      "component/query": "*",
       "segmentio/extend": "*",
       "imiric/vagueTime.js": "3df66595",
       "imiric/ls-cache": "bc622386",
-      "imiric/reddit-api": "*"
+      "imiric/reddit-api": "*",
+      "imiric/helix": "ee8df27b"
   },
   "development": {
       "visionmedia/mocha": "*",

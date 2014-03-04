@@ -10,8 +10,7 @@
 var Reddit = require('reddit-api'),
     Emitter = require('emitter'),
     events = require('event'),
-    classes = require('classes'),
-    query = require('query'),
+    $ = require('helix'),
     render = require('./templates/comment'),
     cache = require('ls-cache'),
     extend = require('extend'),
@@ -60,6 +59,19 @@ String.prototype.hashCode = function(){
 };
 
 
+Object.defineProperty($().constructor.prototype, "addEventListener", {
+    value: function (event, callback, useCapture) {
+        useCapture = ( !! useCapture) | false;
+        for (var i = 0; i < this.length; ++i) {
+            if (this[i] instanceof Node) {
+                this[i].addEventListener(event, callback, useCapture);
+            }
+        }
+        return this;
+    }
+});
+
+
 /**
  * Main module object.
  *
@@ -82,7 +94,7 @@ function RedditComments(frame, options) {
     }
     api.subreddit = options.subreddit;
     this.options = extend(defaultOptions, options);
-    this.frame = query(frame);
+    this.frame = $(frame);
     return this;
 };
 
@@ -99,6 +111,13 @@ RedditComments.prototype.init = function() {
         return rc.getComments(urlId);
     }).then(function(comments) {
         rc.renderComments(comments);
+
+        // Setup click handlers
+        function toggleComment(e) {
+            e.preventDefault();
+            rc.toggleComment(e.target.parentElement);
+        }
+        events.bind($('.rc-collapse'), 'click', toggleComment);
     });
 };
 
@@ -250,7 +269,7 @@ RedditComments.prototype.renderComments = function(comments) {
     for (var i = 0; i < comments.length; ++i) {
         out += rc.renderComment(comments[i]);
     };
-    frame.innerHTML = out;
+    frame.html(out);
 };
 
 /**
@@ -267,4 +286,18 @@ RedditComments.prototype.renderComment = function(c) {
     };
     c.replies = replies;
     return render(c);
+};
+
+
+/**
+ * Display or hide a comment.
+ *
+ * @param {Object} c - A comment object.
+ */
+RedditComments.prototype.toggleComment = function(c) {
+    var $c = $(c);
+    // XXX: This acts like find(). See https://github.com/imiric/helix/issues/1
+    $c.children('.rc-comment, .rc-vote').toggle();
+    $c.children('.rc-collapse').toggleClass('rc-icon-vert');
+    $c.find('.reddit-comment').toggle();
 };
