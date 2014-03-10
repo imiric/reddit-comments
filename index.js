@@ -118,6 +118,13 @@ RedditComments.prototype.init = function() {
             rc.toggleComment(e.target.parentElement);
         }
         events.bind($('.rc-collapse'), 'click', toggleComment);
+
+        // Prepend Reddit's URL to links beginning with '/r/' and '/u/'
+        var specialLinks = rc.frame.find('a[href^="/r/"], a[href^="/u/"]');
+        for (var i = 0; i < specialLinks.length; ++i) {
+            var t = $(specialLinks[i]);
+            t.attr('href', 'http://www.reddit.com' + t.attr('href'));
+        }
     });
 };
 
