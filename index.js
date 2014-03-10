@@ -183,6 +183,23 @@ RedditComments.prototype.getComments = function(urlId) {
 RedditComments.prototype.extractComments = function(data) {
     var rc = this,
         cData = [];
+
+    function cleanCommentBody(body) {
+        // Unescape the HTML
+        var el = document.createElement('div');
+        el.innerHTML = c.body_html;
+        var unescapedHTML = el.childNodes.length === 0 ?
+                                '' : el.childNodes[0].nodeValue;
+
+        // Reddit's API returns the comment's HTML body wrapped in a
+        // `<div class="md"></div>` element. We unwrap it here.
+        var el = document.createElement('div');
+        el.innerHTML = unescapedHTML;
+        var unwrappedHTML = el.childNodes.length === 0 ?
+                                '' : el.childNodes[0].innerHTML;
+        return unwrappedHTML;
+    }
+
     data = (data[1] || data);
     if (!data.data.children) return cData;
     data = data.data.children;
@@ -191,6 +208,7 @@ RedditComments.prototype.extractComments = function(data) {
         var replies = [],
             c = data[i].data,
             date = new Date(0),
+            cleanBody = cleanCommentBody(c.body_html),
             vt;
         if (c.replies) {
             replies = rc.extractComments(c.replies);
@@ -202,7 +220,7 @@ RedditComments.prototype.extractComments = function(data) {
                     created_timestamp: date,
                     replies: replies,
                     score: c.ups - c.downs, // XXX: Where is c.score?
-                    body: c.body});
+                    body: cleanBody});
     }
     return cData;
 };

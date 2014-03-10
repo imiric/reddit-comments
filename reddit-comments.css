@@ -16,6 +16,15 @@
     margin: 5px 0 0;
 }
 
+.reddit-comment .rc-comment p {
+    margin: 10px;
+    line-height: 20px;
+}
+
+.reddit-comment .rc-comment p:first-child {
+    margin-top: 0;
+}
+
 .reddit-comment .rc-vote {
     width: 15px;
     float: left;
