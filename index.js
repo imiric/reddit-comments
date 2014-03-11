@@ -114,12 +114,33 @@ RedditComments.prototype.init = function() {
 
         rc.renderComments(comments);
 
-        // Setup click handlers
+        // Setup click handler for comment toggling
         function toggleComment(e) {
             e.preventDefault();
             rc.toggleComment(e.target.parentElement);
         }
         events.bind($('.rc-collapse'), 'click', toggleComment);
+
+        // Setup click handler for up/down voting
+        function vote(e) {
+            e.preventDefault();
+
+            var el = e.target,
+                comment = $(el).closest('[data-id]'),
+                cl = el.classList,
+                dir = 0;
+
+            if (!cl.contains('rc-active')) {
+                if (cl.contains('rc-arrow-up')) {
+                    dir = 1;
+                } else if (cl.contains('rc-arrow-down')) {
+                    dir = -1;
+                }
+            }
+
+            rc.vote(comment.attr('data-id'), dir);
+        }
+        events.bind($('.rc-vote button'), 'click', vote);
 
         // Prepend Reddit's URL to links beginning with '/r/' and '/u/'
         var specialLinks = rc.frame.find('a[href^="/r/"], a[href^="/u/"]');
@@ -224,7 +245,8 @@ RedditComments.prototype.extractComments = function(data) {
         }
         date.setUTCSeconds(c.created_utc);
         vt = vagueTime.get({to: date});
-        cData.push({author: c.author,
+        cData.push({id: c.name,
+                    author: c.author,
                     created_vague: vt,
                     created_timestamp: date,
                     replies: replies,
@@ -282,6 +304,20 @@ RedditComments.prototype.extractUrlId = function(data) {
     }
 };
 
+
+/**
+ * Vote on a Reddit "thing".
+ *
+ * @param {string} thingId - The fullname of the "thing" (i.e. comment, link,
+ *     etc.).
+ * @param {number} dir - Vote direction. One of (-1, 0, 1).
+ * @see http://www.reddit.com/dev/api#POST_api_vote
+ */
+RedditComments.prototype.vote = function(thingId, dir) {
+    var rc = this;
+
+    return api.vote(thingId, dir);
+};
 
 /**
  * Render a list of comments.

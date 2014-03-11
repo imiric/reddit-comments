@@ -15,6 +15,9 @@
         <div id="reddit-comments"></div>
         <script>
             var rc = require("reddit-comments");
+            window.cache = require('ls-cache');
+            window.render = require('reddit-comments/templates/comment.js');
+            window.$ = require('helix');
             rc("#reddit-comments", {
                 'subreddit': 'aww',
                 'url': 'http://i.imgur.com/Nx0yOSb.jpg?1'
