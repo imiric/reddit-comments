@@ -108,8 +108,10 @@ RedditComments.prototype.init = function() {
     var rc = this;
 
     rc.getUrlId(rc.options.url).then(function(urlId) {
-        return rc.getComments(urlId);
+        if (urlId) return rc.getComments(urlId);
     }).then(function(comments) {
+        if (!comments) return;
+
         rc.renderComments(comments);
 
         // Setup click handlers
@@ -175,7 +177,7 @@ RedditComments.prototype.getComments = function(urlId) {
     return api.getComments(urlId).then(function(res) {
         var data = JSON.parse(res || {}),
             comments = rc.extractComments(data);
-        cache.set(hash, comments, rc.options.commentsCacheExpiration);
+        if (comments) cache.set(hash, comments, rc.options.commentsCacheExpiration);
         return comments;
     });
 };
@@ -256,7 +258,7 @@ RedditComments.prototype.getUrlId = function(url) {
     return api.getInfo({url: url}).then(function(res) {
         var data = JSON.parse(res || {}).data,
             urlId = rc.extractUrlId(data);
-        cache.set(hash, urlId);
+        if (urlId) cache.set(hash, urlId);
         return urlId;
     });
 };
