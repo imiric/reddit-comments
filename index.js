@@ -59,19 +59,6 @@ String.prototype.hashCode = function(){
 };
 
 
-Object.defineProperty($().constructor.prototype, "addEventListener", {
-    value: function (event, callback, useCapture) {
-        useCapture = ( !! useCapture) | false;
-        for (var i = 0; i < this.length; ++i) {
-            if (this[i] instanceof Node) {
-                this[i].addEventListener(event, callback, useCapture);
-            }
-        }
-        return this;
-    }
-});
-
-
 /**
  * Main module object.
  *
