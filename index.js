@@ -108,8 +108,16 @@ RedditComments.prototype.init = function() {
             toggleComment: function(e) {
                 e.preventDefault();
                 rc.toggleComment(e.target.parentElement);
+                rc.resizeIframe();
             }
         }).bind('click .rc-collapse', 'toggleComment');
+
+        // Resize IFrame onLoad
+        Events(rc.iframe, {
+            onload: function(e) {
+                rc.resizeIframe();
+            }
+        }).bind('load', 'onload');
 
         // Prepend Reddit's URL to links beginning with '/r/' and '/u/'
         var specialLinks = rc.el.find('a[href^="/r/"], a[href^="/u/"]');
@@ -149,6 +157,19 @@ RedditComments.prototype.display = function(content) {
     rc.el = $(iframeDoc.body);
     rc.iframe = iframe;
 };
+
+
+/**
+ * Resize the comments IFrame element.
+ */
+RedditComments.prototype.resizeIframe = function() {
+    var iframe = this.iframe;
+    if (iframe) {
+        iframeDoc = 'contentDocument' in iframe ? iframe.contentDocument :
+                                            iframe.contentWindow.document;
+        iframe.height = iframeDoc.body.offsetHeight + "px";
+    }
+}
 
 
 /**
