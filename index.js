@@ -75,7 +75,7 @@ Object.defineProperty($().constructor.prototype, "addEventListener", {
 /**
  * Main module object.
  *
- * @param {String} frame - A CSS selector of the element to be populated by comments.
+ * @param {String} elSelector - A CSS selector of the element to be populated by comments.
  * @param {Object} options - Module configuration.
  * @param {String} options.subreddit - The subreddit name.
  * @param {String} [options.url=document.URL] - The URL to retrieve comments for.
@@ -84,7 +84,7 @@ Object.defineProperty($().constructor.prototype, "addEventListener", {
  * @constructor
  * @private
  */
-function RedditComments(frame, options) {
+function RedditComments(elSelector, options) {
     var defaultOptions = {
         url: document.URL,
         commentsCacheExpiration: 5
@@ -94,7 +94,7 @@ function RedditComments(frame, options) {
     }
     api.subreddit = options.subreddit;
     this.options = extend(defaultOptions, options);
-    this.frame = $(frame);
+    this.el = $(elSelector);
     return this;
 };
 
@@ -122,7 +122,7 @@ RedditComments.prototype.init = function() {
         events.bind($('.rc-collapse'), 'click', toggleComment);
 
         // Prepend Reddit's URL to links beginning with '/r/' and '/u/'
-        var specialLinks = rc.frame.find('a[href^="/r/"], a[href^="/u/"]');
+        var specialLinks = rc.el.find('a[href^="/r/"], a[href^="/u/"]');
         for (var i = 0; i < specialLinks.length; ++i) {
             var t = $(specialLinks[i]);
             t.attr('href', 'http://www.reddit.com' + t.attr('href'));
@@ -291,12 +291,12 @@ RedditComments.prototype.extractUrlId = function(data) {
  */
 RedditComments.prototype.renderComments = function(comments) {
     var rc = this,
-        frame = rc.frame,
+        el = rc.el,
         out = '';
     for (var i = 0; i < comments.length; ++i) {
         out += rc.renderComment(comments[i]);
     };
-    frame.html(out);
+    el.html(out);
 };
 
 /**
