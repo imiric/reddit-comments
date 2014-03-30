@@ -9,7 +9,7 @@
  */
 var Reddit = require('reddit-api'),
     Emitter = require('emitter'),
-    events = require('event'),
+    Events = require('events'),
     $ = require('helix'),
     render = require('./templates/comment'),
     cache = require('ls-cache'),
@@ -114,12 +114,13 @@ RedditComments.prototype.init = function() {
 
         rc.renderComments(comments);
 
-        // Setup click handlers
-        function toggleComment(e) {
-            e.preventDefault();
-            rc.toggleComment(e.target.parentElement);
-        }
-        events.bind($('.rc-collapse'), 'click', toggleComment);
+        // Setup click handler for toggling comments
+        Events(rc.el[0], {
+            toggleComment: function(e) {
+                e.preventDefault();
+                rc.toggleComment(e.target.parentElement);
+            }
+        }).bind('click .rc-collapse', 'toggleComment');
 
         // Prepend Reddit's URL to links beginning with '/r/' and '/u/'
         var specialLinks = rc.el.find('a[href^="/r/"], a[href^="/u/"]');
