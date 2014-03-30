@@ -100,7 +100,8 @@ RedditComments.prototype.init = function() {
         if (urlId) return rc.getComments(urlId);
     }).then(function(comments) {
         data['comments'] = comments || [];
-        rc.render(data);
+        var content = rc.render(data);
+        rc.display(content);
 
         // Setup click handler for toggling comments
         Events(rc.el[0], {
@@ -117,6 +118,16 @@ RedditComments.prototype.init = function() {
             t.attr('href', 'http://www.reddit.com' + t.attr('href'));
         }
     });
+};
+
+
+/**
+ * Display the rendered content.
+
+ * @param {string} content
+ */
+RedditComments.prototype.display = function(content) {
+    this.el.html(content);
 };
 
 
@@ -280,8 +291,7 @@ RedditComments.prototype.extractUrlId = function(data) {
  *     `extractComments()`.
  */
 RedditComments.prototype.render = function(data) {
-    var rc = this,
-        el = rc.el;
+    var rc = this;
 
     // Render comments
     var renderedComments = '';
@@ -291,7 +301,7 @@ RedditComments.prototype.render = function(data) {
 
     data['comments'] = renderedComments;
 
-    el.html(data);
+    return renderIndex(data);
 };
 
 /**
