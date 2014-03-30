@@ -103,6 +103,12 @@ RedditComments.prototype.init = function() {
         var content = rc.render(data);
         rc.display(content);
 
+        // Set all external links to open in a new window
+        var extLinks = rc.el.find('a:not([href^="#"])');
+        for (var i = 0; i < extLinks.length; ++i) {
+            extLinks[i].setAttribute('target', '_blank');
+        }
+
         // Setup click handler for toggling comments
         Events(rc.el[0], {
             toggleComment: function(e) {
