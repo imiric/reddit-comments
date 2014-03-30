@@ -122,12 +122,32 @@ RedditComments.prototype.init = function() {
 
 
 /**
- * Display the rendered content.
-
+ * Display the rendered content inside an IFrame.
+ *
  * @param {string} content
  */
 RedditComments.prototype.display = function(content) {
-    this.el.html(content);
+    var rc = this,
+        iframe = document.createElement('iframe');
+
+    rc.el[0].appendChild(iframe);
+    iframeDoc = 'contentDocument' in iframe ? iframe.contentDocument :
+                                        iframe.contentWindow.document;
+
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('scrolling', 'no');
+    iframe.setAttribute('verticalscrolling', 'no');
+    iframe.setAttribute('horizontalscrolling', 'no');
+    iframe.setAttribute('width', '100%');
+    iframeDoc.open('text/html', 'replace');
+    iframeDoc.write(content);
+    iframeDoc.close();
+    iframe.setAttribute('style', 'width: 100% !important; ' +
+                                 'border: none !important; ' +
+                                 'overflow: hidden !important;');
+
+    rc.el = $(iframeDoc.body);
+    rc.iframe = iframe;
 };
 
 

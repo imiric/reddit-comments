@@ -37,5 +37,5 @@ module.exports = function anonymous(obj) {
     return '';
   };
 
-var out = "";out += section(obj, "authenticated", true, ["\n<a href=\"#login\">login</a>\n"]);out += "\n";out += obj.comments;out += "\n";return out;
+var out = "";out += "<!doctype html>\n<html>\n  <head>\n    <title>Reddit Comments</title>\n  </head>\n  <body>\n    ";out += section(obj, "authenticated", true, ["\n    <a href=\"#login\">login</a>\n    "]);out += "\n    ";out += obj.comments;out += "\n  </body>\n</html>\n";return out;
 }
