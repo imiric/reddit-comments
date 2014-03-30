@@ -11,7 +11,8 @@ var Reddit = require('reddit-api'),
     Emitter = require('emitter'),
     Events = require('events'),
     $ = require('helix'),
-    render = require('./templates/comment'),
+    renderIndex = require('./templates/index'),
+    renderComment = require('./templates/comment'),
     cache = require('ls-cache'),
     extend = require('extend'),
     vagueTime = require('vague-time');
@@ -92,14 +93,14 @@ function RedditComments(elSelector, options) {
  * Displays retrieved comments.
  */
 RedditComments.prototype.init = function() {
-    var rc = this;
+    var rc = this,
+        data = {};
 
     rc.getUrlId(rc.options.url).then(function(urlId) {
         if (urlId) return rc.getComments(urlId);
     }).then(function(comments) {
-        if (!comments) return;
-
-        rc.renderComments(comments);
+        data['comments'] = comments || [];
+        rc.render(data);
 
         // Setup click handler for toggling comments
         Events(rc.el[0], {
@@ -272,19 +273,25 @@ RedditComments.prototype.extractUrlId = function(data) {
 
 
 /**
- * Render a list of comments.
+ * Render the comments block.
  *
- * @param {Array} comments - A collection of comments as returned by
+ * @param {object} data
+ * @param {Array} data.comments - A collection of comments as returned by
  *     `extractComments()`.
  */
-RedditComments.prototype.renderComments = function(comments) {
+RedditComments.prototype.render = function(data) {
     var rc = this,
-        el = rc.el,
-        out = '';
-    for (var i = 0; i < comments.length; ++i) {
-        out += rc.renderComment(comments[i]);
+        el = rc.el;
+
+    // Render comments
+    var renderedComments = '';
+    for (var i = 0; i < data.comments.length; ++i) {
+        renderedComments += rc.renderComment(data.comments[i]);
     };
-    el.html(out);
+
+    data['comments'] = renderedComments;
+
+    el.html(data);
 };
 
 /**
@@ -300,7 +307,7 @@ RedditComments.prototype.renderComment = function(c) {
         replies += rc.renderComment(c.replies[i]);
     };
     c.replies = replies;
-    return render(c);
+    return renderComment(c);
 };
 
 
