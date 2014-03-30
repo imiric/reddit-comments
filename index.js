@@ -94,7 +94,7 @@ function RedditComments(elSelector, options) {
  */
 RedditComments.prototype.init = function() {
     var rc = this,
-        data = {};
+        data = {cssHref: rc.el.attr('data-css')};
 
     rc.getUrlId(rc.options.url).then(function(urlId) {
         if (urlId) return rc.getComments(urlId);

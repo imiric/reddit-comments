@@ -2,8 +2,6 @@
 <html>
     <head>
         <title></title>
-        <link rel="stylesheet" href="build/build.css"></link>
-        <script src="build/build.js"></script>
         <style>
             #reddit-comments {
                 width: 680px;
@@ -12,7 +10,8 @@
         </style>
     </head>
     <body>
-        <div id="reddit-comments"></div>
+        <div id="reddit-comments" data-css="build/build.css"></div>
+        <script src="build/build.js"></script>
         <script>
             var rc = require("reddit-comments");
             rc("#reddit-comments", {
